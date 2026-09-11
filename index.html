@@ -1,0 +1,573 @@
+<title>Hap — Conocé gente viajando</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root{
+    --ink:      #15121c;
+    --panel:    #1f1830;
+    --panel-2:  #241c38;
+    --paper:    #fbf6ec;
+    --accent:   #ff5a3c;
+    --accent-ink:#5a1206;
+    --spark:    #ffc24c;
+    --muted:    #b3a8ce;
+    --muted-2:  #8b7fae;
+    --line:     rgba(251,246,236,0.14);
+    --line-2:   rgba(251,246,236,0.28);
+
+    --font-display:"Bricolage Grotesque","Segoe UI",sans-serif;
+    --font-body:"Plus Jakarta Sans","Helvetica Neue",Arial,sans-serif;
+    --font-mono:"JetBrains Mono","Courier New",monospace;
+
+    --edge: clamp(1.25rem, 4vw, 3rem);
+    color-scheme: dark;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--accent); color:var(--paper); }
+  img,svg{ max-width:100%; display:block; }
+  a{ color:inherit; text-decoration:none; }
+  h1,h2,h3,p{ margin:0; text-wrap:balance; }
+  button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
+  section{ padding:clamp(3rem,7vh,5.5rem) var(--edge); }
+  .row{ max-width:1360px; margin-inline:auto; }
+
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  /* ---------- Header ---------- */
+  .site-header{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1.25rem;
+    padding:1.1rem var(--edge);
+    background:linear-gradient(var(--ink) 75%, transparent);
+    backdrop-filter:blur(2px);
+  }
+  .brand{ display:flex; align-items:center; gap:0.6rem; font-weight:700; font-family:var(--font-display); font-size:1.15rem; }
+  .brand .mark{ width:26px; height:26px; position:relative; flex:none; }
+  .brand .mark span{
+    position:absolute; width:16px; height:16px; border-radius:50%;
+    background:var(--accent);
+  }
+  .brand .mark span:first-child{ left:0; top:5px; }
+  .brand .mark span:last-child{ right:0; top:5px; background:var(--spark); mix-blend-mode:screen; opacity:0.9; }
+
+  .site-nav{ display:flex; gap:2.1rem; font-size:0.92rem; color:var(--muted); }
+  .site-nav a{ position:relative; padding-bottom:2px; }
+  .site-nav a::after{
+    content:""; position:absolute; left:0; right:100%; bottom:-1px; height:1px;
+    background:var(--paper); transition:right .35s cubic-bezier(.65,0,.35,1);
+  }
+  .site-nav a:hover{ color:var(--paper); }
+  .site-nav a:hover::after{ right:0; }
+  @media (max-width:820px){ .site-nav{ display:none; } }
+
+  .header-right{ display:flex; align-items:center; gap:1.3rem; }
+  .clock-ticker{
+    font-family:var(--font-mono); font-size:0.75rem; color:var(--muted);
+    display:flex; align-items:center; gap:0.45rem; white-space:nowrap;
+  }
+  .clock-ticker .city{ color:var(--paper); }
+  @media (max-width:600px){ .clock-ticker{ display:none; } }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:0.5rem;
+    font-family:var(--font-body); font-weight:600; font-size:0.88rem;
+    padding:0.7rem 1.25rem; border-radius:999px;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); }
+  .btn-primary:hover{ transform:translateY(-2px); background:#ff744f; }
+  .btn-ghost{ border:1px solid var(--line-2); color:var(--paper); }
+  .btn-ghost:hover{ border-color:var(--paper); }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:clamp(3rem,9vh,6rem) var(--edge) clamp(2.5rem,7vh,4.5rem);
+    display:flex; flex-direction:column; gap:clamp(2rem,6vh,3.5rem);
+  }
+  .hero-pill{
+    display:inline-flex; align-items:center; gap:0.5rem; align-self:flex-start;
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase;
+    padding:0.5rem 0.9rem; border:1px solid var(--line-2); border-radius:999px; color:var(--spark);
+  }
+  .hero-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--spark); animation:blink 1.8s ease-in-out infinite; }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  @media (prefers-reduced-motion:reduce){ .hero-pill .dot{ animation:none; } }
+
+  .hero-headline{
+    font-family:var(--font-display); font-weight:800; line-height:0.98;
+    font-size:clamp(2.6rem,7.4vw,6rem); letter-spacing:-0.01em;
+  }
+  .hero-headline .rotator{ position:relative; display:inline-block; overflow:hidden; vertical-align:top; height:1.08em; color:var(--accent); }
+  .hero-headline .rotator span{ display:block; animation:cycle 8.4s ease-in-out infinite; }
+  .hero-headline .rotator em{ display:block; height:1.08em; font-style:normal; }
+  @keyframes cycle{
+    0%,15%{ transform:translateY(0); }
+    18.3%,33.3%{ transform:translateY(-100%); }
+    36.6%,51.6%{ transform:translateY(-200%); }
+    55%,70%{ transform:translateY(-300%); }
+    73.3%,88.3%{ transform:translateY(-400%); }
+    91.6%,100%{ transform:translateY(-500%); }
+  }
+  @media (prefers-reduced-motion:reduce){ .hero-headline .rotator span{ animation:none; } }
+
+  .hero-foot{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:2rem; }
+  .hero-intro{ max-width:36ch; font-size:clamp(1.05rem,1.6vw,1.25rem); line-height:1.5; color:var(--muted); }
+
+  .waitlist-inline{ display:flex; gap:0.6rem; flex-wrap:wrap; }
+  .waitlist-inline input{
+    font:inherit; font-size:0.9rem; flex:1 1 13rem;
+    padding:0.8rem 1rem; border:1px solid var(--line-2); border-radius:999px;
+    background:var(--panel); color:var(--paper);
+  }
+  .waitlist-inline input::placeholder{ color:var(--muted-2); }
+  .waitlist-inline input:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ---------- Thesis statement ---------- */
+  .thesis-wrap{ position:relative; }
+  .thesis{
+    font-family:var(--font-display); font-weight:800;
+    font-size:clamp(2.6rem,9vw,7rem); line-height:0.92; letter-spacing:-0.01em;
+    color:var(--accent);
+    max-width:16ch;
+  }
+  .thesis-orbit{
+    position:absolute; right:clamp(0px,3vw,3rem); top:6%;
+    width:clamp(7rem,20vw,12rem); aspect-ratio:1;
+    pointer-events:none;
+  }
+  .thesis-orbit svg{ width:100%; height:100%; }
+  @media (max-width:760px){ .thesis-orbit{ display:none; } }
+  .thesis-copy{ margin-top:clamp(1.5rem,4vh,2.25rem); max-width:56ch; font-size:clamp(1rem,1.5vw,1.15rem); line-height:1.6; color:var(--muted); }
+
+  /* ---------- Widget bar ---------- */
+  .widget-bar{
+    display:flex; align-items:baseline; justify-content:space-between; gap:1.5rem;
+    margin-bottom:clamp(1.5rem,4vh,2.25rem); padding-bottom:1rem; border-bottom:1px solid var(--line);
+  }
+  .widget-bar h2{ font-family:var(--font-display); font-weight:700; font-size:clamp(1.5rem,3.2vw,2.4rem); }
+  .see-all{ font-family:var(--font-mono); font-size:0.78rem; letter-spacing:0.03em; display:flex; align-items:center; gap:0.4rem; color:var(--muted); white-space:nowrap; }
+  .see-all svg{ width:14px; height:14px; transition:transform .25s ease; }
+  .see-all:hover{ color:var(--paper); }
+  .see-all:hover svg{ transform:translateX(4px); }
+
+  /* ---------- Steps ---------- */
+  .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+  @media (max-width:820px){ .steps{ grid-template-columns:1fr; } }
+  .step{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:1.75rem; display:flex; flex-direction:column; gap:0.9rem;
+  }
+  .step .num{ font-family:var(--font-mono); font-size:0.78rem; color:var(--spark); }
+  .step h3{ font-family:var(--font-display); font-weight:700; font-size:1.25rem; }
+  .step p{ color:var(--muted); font-size:0.92rem; line-height:1.5; }
+
+  /* ---------- City carousel ---------- */
+  .city-scroll{
+    display:flex; gap:1.1rem; overflow-x:auto; padding-bottom:0.75rem;
+    scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin; scrollbar-color:var(--line-2) transparent;
+  }
+  .city-scroll::-webkit-scrollbar{ height:6px; }
+  .city-scroll::-webkit-scrollbar-thumb{ background:var(--line-2); border-radius:99px; }
+  .city-card{
+    flex:0 0 clamp(12.5rem,24vw,15.5rem); scroll-snap-align:start;
+    display:flex; flex-direction:column; gap:0.85rem;
+  }
+  .city-thumb{
+    aspect-ratio:3/4; border-radius:12px; position:relative; overflow:hidden;
+    display:flex; align-items:flex-end; padding:0.85rem;
+    transition:transform .35s cubic-bezier(.2,.7,.2,1);
+    border:1px solid var(--line);
+  }
+  .city-card:hover .city-thumb{ transform:translateY(-6px); }
+  .city-thumb .code{ font-family:var(--font-mono); font-weight:600; font-size:0.95rem; color:var(--paper); text-shadow:0 1px 6px rgba(0,0,0,0.35); }
+  .c1{ background:radial-gradient(120% 100% at 15% 0%,#ff8a5c 0%,#ff5a3c 45%,#7a1f16 100%); }
+  .c2{ background:radial-gradient(120% 100% at 85% 0%,#ffd88a 0%,#ffb04c 45%,#7a4a12 100%); }
+  .c3{ background:radial-gradient(120% 100% at 15% 100%,#7d6bff 0%,#3f2b8f 45%,#160f33 100%); }
+  .c4{ background:radial-gradient(120% 100% at 85% 100%,#4cd4ff 0%,#2777c4 45%,#0f2c4a 100%); }
+  .c5{ background:radial-gradient(120% 100% at 50% 0%,#ff5ca0 0%,#c22a70 45%,#3c0f26 100%); }
+  .city-meta .name{ font-weight:700; font-size:1rem; }
+  .city-meta .tagline{ color:var(--muted); font-size:0.85rem; line-height:1.35; min-height:2.3em; margin-top:0.2rem; }
+  .city-tags{ display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.4rem; }
+  .city-tags span{
+    font-family:var(--font-mono); font-size:0.63rem; letter-spacing:0.03em; text-transform:uppercase;
+    color:var(--muted); border:1px solid var(--line); border-radius:99px; padding:0.2rem 0.5rem;
+  }
+
+  /* ---------- Match spotlight ---------- */
+  .match-spotlight{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,6vw,4rem); align-items:center; }
+  @media (max-width:900px){ .match-spotlight{ grid-template-columns:1fr; } }
+  .match-copy h2{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.9rem,4vw,3rem); line-height:1.04; margin-bottom:1rem; }
+  .match-copy p{ color:var(--muted); font-size:1.02rem; line-height:1.6; max-width:44ch; }
+  .match-copy ul{ list-style:none; margin:1.4rem 0 0; padding:0; display:flex; flex-direction:column; gap:0.65rem; }
+  .match-copy li{ display:flex; gap:0.6rem; align-items:flex-start; font-size:0.94rem; color:var(--paper); }
+  .match-copy li svg{ flex:none; width:18px; height:18px; margin-top:2px; color:var(--accent); }
+
+  .mock-stack{ position:relative; display:flex; flex-direction:column; gap:1.25rem; }
+  .mock-label{ font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); margin-bottom:0.5rem; }
+  .mock-card{
+    background:var(--paper); color:var(--ink); border-radius:16px; padding:1.25rem;
+    box-shadow:0 1.5rem 3rem rgba(0,0,0,0.35);
+  }
+  .mock-match{ display:flex; gap:0.9rem; align-items:center; }
+  .avatar{
+    width:46px; height:46px; border-radius:50%; flex:none;
+    display:grid; place-items:center; font-family:var(--font-display); font-weight:700; color:var(--paper);
+    background:linear-gradient(155deg,#ff8a5c,#ff5a3c);
+  }
+  .mock-match .who{ flex:1; }
+  .mock-match .who .name{ font-weight:700; font-size:0.98rem; }
+  .mock-match .who .loc{ font-size:0.8rem; color:#6b6480; }
+  .mock-score{ font-family:var(--font-mono); font-weight:600; font-size:1.05rem; color:#c9411f; }
+  .mock-interests{ display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.9rem; }
+  .mock-interests span{ font-size:0.72rem; background:#efe8da; border-radius:99px; padding:0.28rem 0.6rem; }
+  .mock-cta{ margin-top:1rem; display:inline-flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:600; color:#c9411f; }
+
+  .mock-plan{ display:flex; flex-direction:column; gap:0.7rem; }
+  .mock-plan .title{ font-weight:700; font-size:1rem; }
+  .mock-plan .when{ font-family:var(--font-mono); font-size:0.78rem; color:#6b6480; }
+  .mock-avatars{ display:flex; }
+  .mock-avatars .avatar{ width:32px; height:32px; font-size:0.75rem; margin-left:-8px; border:2px solid var(--paper); }
+  .mock-avatars .avatar:first-child{ margin-left:0; }
+
+  /* ---------- Banner ---------- */
+  .banner{
+    height:clamp(12rem,32vw,20rem); border-radius:16px; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:2rem;
+    background:
+      radial-gradient(90% 130% at 20% 0%, rgba(255,90,60,0.5), transparent 60%),
+      radial-gradient(70% 100% at 90% 100%, rgba(255,194,76,0.28), transparent 60%),
+      linear-gradient(160deg,#241c38 0%, #15121c 75%);
+    border:1px solid var(--line);
+  }
+  .banner p{
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(1.5rem,4vw,2.6rem); line-height:1.1; max-width:22ch; color:var(--paper);
+  }
+
+  /* ---------- Split (waitlist) ---------- */
+  .split{ display:grid; grid-template-columns:1fr 1.1fr; gap:clamp(2rem,6vw,5rem); align-items:center; }
+  @media (max-width:860px){ .split{ grid-template-columns:1fr; } }
+  .split h2{ font-family:var(--font-display); font-weight:800; font-size:clamp(2.1rem,5.2vw,3.6rem); line-height:0.98; }
+  .split .lead{ margin-top:0.9rem; color:var(--muted); max-width:34ch; line-height:1.55; }
+
+  .waitlist-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:clamp(1.75rem,4vw,2.5rem); display:flex; flex-direction:column; gap:1.3rem;
+  }
+  .waitlist-card h3{ font-family:var(--font-display); font-weight:700; font-size:clamp(1.3rem,2.4vw,1.7rem); }
+  .waitlist-card p{ color:var(--muted); font-size:0.92rem; max-width:38ch; }
+  .waitlist-form{ display:flex; gap:0.6rem; flex-wrap:wrap; }
+  .waitlist-form input{
+    flex:1 1 12rem; font:inherit; font-size:0.9rem; padding:0.85rem 1rem;
+    border:1px solid var(--line-2); border-radius:10px; background:var(--ink); color:var(--paper);
+  }
+  .waitlist-form input::placeholder{ color:var(--muted-2); }
+  .waitlist-form input:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+  .waitlist-form button{
+    padding:0.85rem 1.4rem; background:var(--accent); color:var(--accent-ink);
+    border-radius:10px; font-size:0.9rem; font-weight:700; transition:background .2s ease;
+  }
+  .waitlist-form button:hover{ background:#ff744f; }
+  .waitlist-note{ font-family:var(--font-mono); font-size:0.72rem; color:var(--muted-2); }
+
+  /* ---------- About ---------- */
+  .about{ display:grid; grid-template-columns:1.05fr 1fr; gap:clamp(2rem,6vw,5rem); align-items:center; }
+  @media (max-width:860px){ .about{ grid-template-columns:1fr; } }
+  .about-copy p{ font-size:1.02rem; line-height:1.6; margin-bottom:1.1rem; color:var(--muted); }
+  .about-copy a{ display:inline-flex; align-items:center; gap:0.5rem; font-weight:600; margin-top:0.4rem; color:var(--paper); border-bottom:1px solid var(--paper); padding-bottom:2px; }
+  .about-copy a svg{ width:14px; height:14px; }
+  .about-media{
+    aspect-ratio:5/4; border-radius:16px; position:relative; overflow:hidden;
+    background:conic-gradient(from 210deg at 40% 40%, #ff5a3c, #ffc24c, #7d6bff, #ff5a3c);
+    border:1px solid var(--line);
+  }
+  .about-media::before{ content:""; position:absolute; inset:0; background:radial-gradient(60% 60% at 30% 70%, rgba(21,18,28,0.65), rgba(21,18,28,0.15) 70%); }
+  .about-media::after{
+    content:"HAP"; position:absolute; inset:0; display:grid; place-items:center;
+    font-family:var(--font-display); font-weight:800; font-size:clamp(2.5rem,6vw,4.5rem); color:rgba(251,246,236,0.9); letter-spacing:0.02em;
+  }
+
+  /* ---------- Footer ---------- */
+  .site-footer{ padding:clamp(3rem,8vh,6rem) var(--edge) 2rem; border-top:1px solid var(--line); }
+  .footer-cta{
+    font-family:var(--font-display); font-weight:800; font-size:clamp(2.4rem,8vw,6rem);
+    line-height:0.94; letter-spacing:-0.01em; margin-bottom:clamp(1.75rem,5vh,3rem); max-width:16ch;
+  }
+  .footer-cta .accent{ color:var(--accent); }
+  .footer-cta-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1.5rem; margin-bottom:clamp(2rem,5vh,3rem); padding-bottom:clamp(2rem,5vh,3rem); border-bottom:1px solid var(--line); }
+
+  .footer-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(11rem,1fr)); gap:2rem; padding-bottom:clamp(2rem,5vh,3rem); border-bottom:1px solid var(--line); }
+  .footer-col h4{ font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); margin-bottom:0.75rem; font-family:var(--font-mono); font-weight:400; }
+  .footer-col p, .footer-col a{ font-size:0.95rem; line-height:1.6; display:block; color:var(--muted); }
+  .footer-col a:hover{ color:var(--paper); }
+
+  .footer-bottom{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; padding-top:1.5rem; font-family:var(--font-mono); font-size:0.76rem; color:var(--muted-2); }
+  .footer-bottom nav{ display:flex; gap:1.4rem; flex-wrap:wrap; }
+  .footer-status{ display:flex; align-items:center; gap:0.4rem; }
+  .footer-status .dot{ width:6px; height:6px; border-radius:50%; background:var(--spark); display:inline-block; animation:blink 2s ease-in-out infinite; }
+</style>
+
+<header class="site-header">
+  <a class="brand" href="#" aria-label="Hap, inicio">
+    <span class="mark"><span></span><span></span></span>
+    Hap
+  </a>
+  <nav class="site-nav">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#ciudades">Ciudades</a>
+    <a href="#comunidad">Comunidad</a>
+  </nav>
+  <div class="header-right">
+    <span class="clock-ticker"><span class="city" id="tickerCity">Lisboa</span> · <span id="tickerTime">21:04</span></span>
+    <a class="btn btn-primary" href="#waitlist">Sumate</a>
+  </div>
+</header>
+
+<section class="hero">
+  <span class="hero-pill"><span class="dot"></span> Lista de espera abierta</span>
+  <h1 class="hero-headline">
+    CONOCÉ GENTE<br>
+    <span class="rotator">
+      <span>
+        <em>EN BARCELONA</em>
+        <em>EN LISBOA</em>
+        <em>EN CDMX</em>
+        <em>EN BUENOS AIRES</em>
+        <em>EN TOKIO</em>
+        <em>EN BERLÍN</em>
+      </span>
+    </span>
+  </h1>
+  <div class="hero-foot">
+    <p class="hero-intro">Hap te conecta con viajeros afines a vos — mismos intereses, mismo ritmo de viaje — para armar un plan juntos y salir a vivirlo, no solo a chatear.</p>
+    <form class="waitlist-inline" onsubmit="event.preventDefault()">
+      <input type="email" placeholder="tu@email.com" aria-label="Email" required>
+      <button class="btn btn-primary" type="submit">Unirme</button>
+    </form>
+  </div>
+</section>
+
+<section class="thesis-wrap">
+  <div class="row" style="position:relative;">
+    <h2 class="thesis">VIAJAR SOLX<br>NO ES ESTAR<br>SOLX.</h2>
+    <div class="thesis-orbit" aria-hidden="true">
+      <svg viewBox="0 0 200 200" fill="none">
+        <circle cx="70" cy="85" r="34" fill="#ff5a3c"/>
+        <circle cx="128" cy="118" r="24" fill="#ffc24c" opacity="0.85"/>
+        <path d="M96 92 L112 108" stroke="#fbf6ec" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="thesis-copy">La mayoría de las mejores historias de viaje no son sobre lugares — son sobre con quién las viviste. Hap existe para que ese encuentro no dependa de la suerte: te muestra viajeros y locales con tu misma energía, en la ciudad donde estás hoy, listos para armar algo juntos.</p>
+  </div>
+</section>
+
+<section id="como-funciona">
+  <div class="row">
+    <div class="widget-bar"><h2>Cómo funciona</h2></div>
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>Contanos quién sos</h3>
+        <p>Intereses, idiomas, ritmo de viaje — mochilero o de lujo, planes tranquilos o de fiesta. Cuanto más real, mejor el match.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>Mirá quién hay cerca</h3>
+        <p>Te mostramos viajeros y locales afines en tu ciudad actual, ordenados por afinidad real, no por cercanía nada más.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>Armen un plan y salgan</h3>
+        <p>De un café a una noche entera explorando. Propongan, súmense, coordinen — y que el buen momento pase afuera de la app.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ciudades">
+  <div class="row">
+    <div class="widget-bar">
+      <h2>Las primeras ciudades</h2>
+      <a class="see-all" href="#">Ver el mapa completo <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+    <div class="city-scroll" id="cityScroll"></div>
+  </div>
+</section>
+
+<section>
+  <div class="row match-spotlight">
+    <div class="match-copy">
+      <span class="eyebrow">Match por afinidad</span>
+      <h2 style="margin-top:0.6rem;">No es geolocalización. Es afinidad real.</h2>
+      <p>El match de Hap cruza intereses, idiomas, energía social y ritmo de viaje — para que la persona que te aparece sea alguien con quien de verdad tendría sentido tomar algo.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Intereses y estilo de viaje en común</li>
+        <li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Idiomas que ambos hablan</li>
+        <li><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Energía social: tranquilo, activo o fiestero</li>
+      </ul>
+    </div>
+    <div class="mock-stack">
+      <div>
+        <p class="mock-label">Vista previa — match</p>
+        <div class="mock-card mock-match">
+          <span class="avatar">S</span>
+          <div class="who">
+            <div class="name">Sofía, 27</div>
+            <div class="loc">Ahora en Lisboa</div>
+          </div>
+          <span class="mock-score">91%</span>
+        </div>
+      </div>
+      <div class="mock-card" style="padding:1.1rem 1.25rem;">
+        <div class="mock-interests">
+          <span>Surf</span><span>Fotografía</span><span>Comida callejera</span><span>Trekking</span>
+        </div>
+        <span class="mock-cta">Proponer un plan →</span>
+      </div>
+      <div>
+        <p class="mock-label">Vista previa — plan</p>
+        <div class="mock-card mock-plan">
+          <div class="title">Café + mirador</div>
+          <div class="when">Sáb · 18:00 · Alfama, Lisboa</div>
+          <div class="mock-avatars">
+            <span class="avatar" style="background:linear-gradient(155deg,#ffc24c,#ff5a3c);">S</span>
+            <span class="avatar" style="background:linear-gradient(155deg,#7d6bff,#4cd4ff);">M</span>
+            <span class="avatar" style="background:linear-gradient(155deg,#ff5ca0,#c22a70);">+2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="row banner"><p>El mejor souvenir es la gente que conocés en el camino.</p></div>
+</section>
+
+<section id="waitlist">
+  <div class="row split">
+    <div>
+      <span class="eyebrow">Próximamente</span>
+      <h2 style="margin-top:0.6rem;">SÉ DE LOS<br>PRIMEROS.</h2>
+      <p class="lead">Estamos armando Hap ciudad por ciudad. Sumate a la lista de espera y te avisamos apenas esté disponible donde estás — o donde vas.</p>
+    </div>
+    <div class="waitlist-card">
+      <div>
+        <h3>Reservá tu lugar</h3>
+        <p>Sin spam. Un solo email cuando Hap llegue a tu ciudad.</p>
+      </div>
+      <form class="waitlist-form" onsubmit="event.preventDefault()">
+        <input type="email" placeholder="tu@email.com" aria-label="Email" required>
+        <button type="submit">Sumarme</button>
+      </form>
+      <span class="waitlist-note">000 viajeros en la lista — vas a ser de los primeros</span>
+    </div>
+  </div>
+</section>
+
+<section id="comunidad">
+  <div class="row about">
+    <div class="about-copy">
+      <span class="eyebrow">Por qué existe Hap</span>
+      <p style="margin-top:0.6rem;">Viajar te cambia más rápido cuando lo hacés con gente. Pero conocer a alguien afín en una ciudad nueva suele ser cuestión de suerte: el hostel correcto, la mesa de al lado, un grupo de Facebook.</p>
+      <p>Hap le saca la suerte de la ecuación. Construimos un match pensado para viajeros — no para citas — y herramientas simples para pasar de "hola" a un plan concreto en minutos.</p>
+      <a href="#waitlist">Sumate a la lista de espera <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+    <div class="about-media" aria-hidden="true"></div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="row">
+    <div class="footer-cta-row">
+      <h2 class="footer-cta">¿LISTX PARA TU<br><span class="accent">PRÓXIMO PLAN?</span></h2>
+      <a class="btn btn-primary" href="#waitlist">Sumarme a la lista de espera</a>
+    </div>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <a href="mailto:hola@hap.app">hola@hap.app</a>
+      </div>
+      <div class="footer-col">
+        <h4>Comunidad</h4>
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+        <a href="#">Grupo de viajeros</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacidad</a>
+        <a href="#">Términos</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© Hap — 2026</span>
+      <span class="footer-status"><span class="dot"></span> En construcción, ciudad por ciudad.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // multi-city clock ticker
+  const cities = [
+    ["Lisboa","Europe/Lisbon"],
+    ["Barcelona","Europe/Madrid"],
+    ["Ciudad de México","America/Mexico_City"],
+    ["Buenos Aires","America/Argentina/Buenos_Aires"],
+    ["Tokio","Asia/Tokyo"],
+    ["Berlín","Europe/Berlin"],
+  ];
+  let ci = 0;
+  function tickClock(){
+    const [name, tz] = cities[ci];
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: tz }));
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    const cityEl = document.getElementById('tickerCity');
+    const timeEl = document.getElementById('tickerTime');
+    if(cityEl && timeEl){ cityEl.textContent = name; timeEl.textContent = `${hh}:${mm}`; }
+  }
+  tickClock();
+  setInterval(()=>{ tickClock(); }, 1000);
+  setInterval(()=>{ ci = (ci+1) % cities.length; tickClock(); }, 4000);
+
+  // city cards
+  const cityData = [
+    ["Barcelona","BCN","Playa de día, terraza de noche",["Playa & Fiesta","Nómades"],"c1"],
+    ["Lisboa","LIS","Miradores, fado y tardes eternas",["Cultura","Vida nocturna"],"c2"],
+    ["Ciudad de México","CDMX","Mezcal, arte y charlas hasta tarde",["Gastronomía","Cultura"],"c3"],
+    ["Buenos Aires","BUE","Asado, tango y sobremesas infinitas",["Gastronomía","Vida nocturna"],"c4"],
+    ["Tokio","TYO","Templos de día, karaoke de noche",["Cultura","Vida nocturna"],"c5"],
+    ["Berlín","BER","Historia, techno y clubs sin reloj",["Vida nocturna","Cultura"],"c1"],
+    ["Bangkok","BKK","Templos, mercados y calor humano",["Aventura","Gastronomía"],"c2"],
+    ["Nueva York","NYC","Ritmo imparable, gente de todos lados",["Cultura","Nómades"],"c3"],
+    ["Medellín","MDE","Eterna primavera y planes al aire libre",["Naturaleza","Nómades"],"c4"],
+    ["Bali","DPS","Surf de mañana, coworking de tarde",["Naturaleza","Nómades"],"c5"],
+  ];
+  document.getElementById('cityScroll').innerHTML = cityData.map(([name,code,tagline,tags,pal])=>`
+    <article class="city-card">
+      <div class="city-thumb ${pal}"><span class="code">${code}</span></div>
+      <div class="city-meta">
+        <div class="name">${name}</div>
+        <div class="tagline">${tagline}</div>
+        <div class="city-tags">${tags.map(t=>`<span>${t}</span>`).join('')}</div>
+      </div>
+    </article>`).join('');
+</script>

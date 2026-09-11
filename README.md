@@ -1,0 +1,1 @@
+Hap: una app para personas que viajan y quieren conocer gente en diferentes ciudades del mundo mientras hacen planes juntos.
