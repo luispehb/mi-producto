@@ -111,15 +111,16 @@
     font-size:clamp(2.6rem,7.4vw,6rem); letter-spacing:-0.01em;
   }
   .hero-headline .rotator{ position:relative; display:inline-block; overflow:hidden; vertical-align:top; height:1.08em; color:var(--accent); }
-  .hero-headline .rotator span{ display:block; animation:cycle 8.4s ease-in-out infinite; }
+  .hero-headline .rotator span{ display:block; animation:cycle 16.8s ease-in-out infinite; }
   .hero-headline .rotator em{ display:block; height:1.08em; font-style:normal; }
   @keyframes cycle{
-    0%,15%{ transform:translateY(0); }
-    18.3%,33.3%{ transform:translateY(-100%); }
-    36.6%,51.6%{ transform:translateY(-200%); }
-    55%,70%{ transform:translateY(-300%); }
-    73.3%,88.3%{ transform:translateY(-400%); }
-    91.6%,100%{ transform:translateY(-500%); }
+    0%,12.3%{ transform:translateY(0); }
+    14.3%,26.6%{ transform:translateY(-14.29%); }
+    28.6%,40.9%{ transform:translateY(-28.57%); }
+    42.9%,55.1%{ transform:translateY(-42.86%); }
+    57.1%,69.4%{ transform:translateY(-57.14%); }
+    71.4%,83.7%{ transform:translateY(-71.43%); }
+    85.7%,98%{ transform:translateY(-85.71%); }
   }
   @media (prefers-reduced-motion:reduce){ .hero-headline .rotator span{ animation:none; } }
 
@@ -346,9 +347,10 @@
 <section class="hero">
   <span class="hero-pill"><span class="dot"></span> Lista de espera abierta</span>
   <h1 class="hero-headline">
-    CONOCÉ GENTE<br>
+    GENTE VERIFICADA<br>
     <span class="rotator">
       <span>
+        <em>POR INVITACIÓN</em>
         <em>EN BARCELONA</em>
         <em>EN LISBOA</em>
         <em>EN CDMX</em>
@@ -359,7 +361,7 @@
     </span>
   </h1>
   <div class="hero-foot">
-    <p class="hero-intro">Hap te conecta con viajeros afines a vos — mismos intereses, mismo ritmo de viaje — para armar un plan juntos y salir a vivirlo, no solo a chatear.</p>
+    <p class="hero-intro">Cada persona en Hap entra invitada por alguien que ya está adentro, así que sabés que es real. Conectás con viajeros afines a vos para armar un plan juntos y salir a vivirlo, no solo a chatear.</p>
     <form class="waitlist-inline" onsubmit="event.preventDefault()">
       <input type="email" placeholder="tu@email.com" aria-label="Email" required>
       <button class="btn btn-primary" type="submit">Unirme</button>
