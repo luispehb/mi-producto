@@ -11,3 +11,8 @@ supabase/.branches/
 next-env.d.ts
 *.tsbuildinfo
 .vercel
+
+# Claude Code: archivos locales de cada máquina
+.claude/settings.local.json
+.claude/launch.json
+.claude/worktrees/

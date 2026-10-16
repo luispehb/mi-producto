@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import ClockTicker from "@/components/ClockTicker";
 import CityCards from "@/components/CityCards";
-import SignupForm from "@/components/SignupForm";
+import RegisterForm from "@/components/RegisterForm";
 import FeedbackForm from "@/components/FeedbackForm";
+import VisitTracker from "@/components/VisitTracker";
 import "./landing.css";
 
 export const metadata: Metadata = { title: "Hap — Conocé gente viajando" };
@@ -22,6 +23,7 @@ export default function Home() {
   return (
     <>
 <link rel="stylesheet" href={FONTS} precedence="default" />
+<VisitTracker />
 <header className="site-header">
   <a className="brand" href="#" aria-label="Hap, inicio">
     <span className="mark">
@@ -41,12 +43,12 @@ export default function Home() {
   </nav>
   <div className="header-right">
     <ClockTicker />
-    <a className="btn btn-primary" href="#waitlist">Sumate</a>
+    <a className="btn btn-primary" href="#registro">Sumate</a>
   </div>
 </header>
 
 <section className="hero">
-  <span className="hero-pill"><span className="dot"></span> Lista de espera abierta</span>
+  <span className="hero-pill"><span className="dot"></span> Ya podés crear tu cuenta</span>
   <h1 className="hero-headline">
     GENTE VERIFICADA<br/>
     <span className="rotator">
@@ -63,7 +65,7 @@ export default function Home() {
   </h1>
   <div className="hero-foot">
     <p className="hero-intro">Cada persona en Hap entra invitada por alguien que ya está adentro, así que sabés que es real. Conectás con viajeros afines a vos para armar un plan juntos y salir a vivirlo, no solo a chatear.</p>
-    <SignupForm variant="inline" />
+    <RegisterForm variant="inline" />
   </div>
 </section>
 
@@ -164,20 +166,20 @@ export default function Home() {
   <div className="row banner"><p>El mejor souvenir es la gente que conocés en el camino.</p></div>
 </section>
 
-<section id="waitlist">
+<section id="registro">
   <div className="row split">
     <div>
-      <span className="eyebrow">Próximamente</span>
+      <span className="eyebrow">Creá tu cuenta</span>
       <h2 style={{ marginTop: "0.6rem" }}>SÉ DE LOS<br/>PRIMEROS.</h2>
-      <p className="lead">Estamos armando Hap ciudad por ciudad. Sumate a la lista de espera y te avisamos apenas esté disponible donde estás — o donde vas.</p>
+      <p className="lead">Estamos armando Hap ciudad por ciudad. Creá tu cuenta y armá tu primer plan donde estás — o donde vas.</p>
     </div>
     <div className="waitlist-card">
       <div>
-        <h3>Reservá tu lugar</h3>
-        <p>Sin spam. Un solo email cuando Hap llegue a tu ciudad.</p>
+        <h3>Creá tu cuenta</h3>
+        <p>Con tu email y una contraseña. En un minuto estás armando tu primer plan.</p>
       </div>
-      <SignupForm variant="card" />
-      <span className="waitlist-note">000 viajeros en la lista — vas a ser de los primeros</span>
+      <RegisterForm variant="card" />
+      <span className="waitlist-note">¿Ya tenés cuenta? <a href="/login">Iniciá sesión</a></span>
     </div>
   </div>
 </section>
@@ -188,7 +190,7 @@ export default function Home() {
       <span className="eyebrow">Por qué existe Hap</span>
       <p style={{ marginTop: "0.6rem" }}>Viajar te cambia más rápido cuando lo hacés con gente. Pero conocer a alguien afín en una ciudad nueva suele ser cuestión de suerte: el hostel correcto, la mesa de al lado, un grupo de Facebook.</p>
       <p>Hap le saca la suerte de la ecuación. Construimos un match pensado para viajeros — no para citas — y herramientas simples para pasar de &quot;hola&quot; a un plan concreto en minutos.</p>
-      <a href="#waitlist">Sumate a la lista de espera <Arrow /></a>
+      <a href="#registro">Creá tu cuenta <Arrow /></a>
     </div>
     <div className="about-media" aria-hidden="true"></div>
   </div>
@@ -211,7 +213,7 @@ export default function Home() {
   <div className="row">
     <div className="footer-cta-row">
       <h2 className="footer-cta">¿LISTX PARA TU<br/><span className="accent">PRÓXIMO PLAN?</span></h2>
-      <a className="btn btn-primary" href="#waitlist">Sumarme a la lista de espera</a>
+      <a className="btn btn-primary" href="#registro">Crear mi cuenta</a>
     </div>
     <div className="footer-grid">
       <div className="footer-col">
