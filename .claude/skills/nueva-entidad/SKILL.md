@@ -54,7 +54,7 @@ Corré `supabase migration list` otra vez y confirmá que la migración figura e
 
 ## 3. Ruta de API
 
-`app/api/<plural-es>/route.ts` con `POST`. Si después hace falta, se agregan `PATCH` y `DELETE` con el mismo esquema.
+`app/api/<plural-es>/route.ts` con `POST`. Editar y borrar van en `app/api/<plural-es>/[id]/route.ts` (`PATCH` y `DELETE`, como `app/api/planes/[id]/route.ts`): `ctx: RouteContext<"/api/<plural-es>/[id]">` + `await ctx.params`, validá que `id` sea uuid y usá `.eq("id", id).select("id")`. Si no vuelven filas, respondé 404 (el RLS oculta las ajenas). Después de crear una ruta dinámica, corré `npx next typegen` para que `tsc` conozca su tipo.
 - `const user = await getUser()`. Si no hay usuario → `401` con `{ error }`.
 - Validá y armá **a mano** cada campo, con las mismas reglas que los `check` de la tabla. Respondé `400` con un mensaje en voseo por campo ("Poné una ciudad (2 a 60 letras).").
 - Insertá con `await supabaseUser()` (llave pública + sesión, así se aplica el RLS) y pasá `user_id: user.id`. Nunca uses `supabaseAdmin()`.

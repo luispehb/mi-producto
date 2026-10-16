@@ -42,17 +42,12 @@ h1{ font-family:var(--font-display); font-weight:800; font-size:clamp(1.8rem,5vw
   background:var(--panel); border:1px solid var(--line); border-radius:18px;
   padding:clamp(1.5rem,4vw,2.25rem); display:flex; flex-direction:column; gap:0.8rem;
 }
-.login input, .plan-form input, .plan-form select{
+.login input{
   font:inherit; font-size:0.9rem; padding:0.85rem 1rem; width:100%;
   border:1px solid var(--line-2); border-radius:10px; background:var(--ink); color:var(--paper);
 }
-.login input:focus-visible, .plan-form input:focus-visible, .plan-form select:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+.login input:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
 
-/* ---------- Armar un plan ---------- */
-.plan-form{ display:grid; grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr)); gap:0.8rem; align-items:end; }
-.plan-form label{ display:flex; flex-direction:column; gap:0.4rem; font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); }
-.plan-form .wide{ grid-column:1 / -1; }
-.plan-form .status{ grid-column:1 / -1; }
 .status{ font-size:0.85rem; color:var(--accent); min-height:1.2em; }
 
 /* ---------- Dashboard ---------- */
@@ -88,3 +83,113 @@ td.date{ font-family:var(--font-mono); font-size:0.78rem; }
 .chart{ width:100%; min-width:32rem; height:auto; display:block; }
 .chart .grid{ stroke:var(--line); stroke-width:1; }
 .chart .tick{ fill:var(--muted-2); font-family:var(--font-mono); font-size:11px; }
+
+/* ---------- Mis planes (mobile primero) ---------- */
+.planes{ --e-tranquilo:#4cd4ff; --e-activo:var(--spark); --e-fiestero:#ff5ca0; }
+.planes-topbar{ align-items:center; margin-bottom:1.5rem; }
+.planes-topbar h1{ font-size:clamp(1.9rem,8vw,2.6rem); }
+.planes .btn{ min-height:44px; }
+.btn-danger{ background:var(--accent); color:var(--accent-ink); }
+.btn-danger:hover{ background:#ff744f; }
+
+.planes-layout{ display:flex; flex-direction:column; gap:1.5rem; }
+.planes-list{ display:flex; flex-direction:column; gap:2rem; min-width:0; }
+
+/* Panel para armar un plan: en mobile se despliega con el botón */
+.new-plan{ display:flex; flex-direction:column; gap:1rem; }
+.new-plan-toggle{ width:100%; font-size:1rem; padding:0.95rem 1.2rem; }
+.new-plan.open .new-plan-toggle{ background:none; color:var(--paper); border:1px solid var(--line-2); }
+.new-plan-body{ display:none; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:1.25rem; }
+.new-plan.open .new-plan-body{ display:block; }
+.new-plan-body h2{ font-family:var(--font-display); font-weight:800; font-size:1.45rem; }
+.new-plan-sub{ color:var(--muted); font-size:0.9rem; margin:0.35rem 0 1.25rem; }
+
+/* Formulario */
+.plan-form{ display:flex; flex-direction:column; gap:1rem; }
+.plan-form .field{ display:flex; flex-direction:column; gap:0.45rem; border:0; margin:0; padding:0; min-width:0; }
+.plan-form .field > span, .plan-form legend{ font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted-2); padding:0; margin-bottom:0.45rem; }
+.plan-form .field > span{ margin-bottom:0; }
+.plan-form input[type="text"], .plan-form input:not([type]), .plan-form input[type="datetime-local"]{
+  font:inherit; font-size:16px; min-height:48px; padding:0.75rem 0.95rem; width:100%;
+  border:1px solid var(--line-2); border-radius:12px; background:var(--ink); color:var(--paper);
+}
+.plan-form input::placeholder{ color:var(--muted-2); }
+.plan-form input:focus-visible, .plan-form button:focus-visible, .energy-option input:focus-visible + span{ outline:2px solid var(--accent); outline-offset:2px; }
+.plan-form input[type="datetime-local"]::-webkit-calendar-picker-indicator{ filter:invert(0.9); }
+
+/* Energía: tres chips en una fila que ocupa todo el ancho */
+.energy-picker{ display:grid; grid-template-columns:repeat(3, 1fr); gap:0.5rem; }
+.energy-option{ position:relative; }
+.energy-option input{ position:absolute; opacity:0; inset:0; margin:0; cursor:pointer; }
+.energy-option span{
+  display:flex; align-items:center; justify-content:center; gap:0.45rem; min-height:48px; padding:0.5rem;
+  border:1px solid var(--line-2); border-radius:12px; background:var(--ink);
+  font-size:0.92rem; font-weight:600; text-transform:capitalize; transition:background .15s ease, border-color .15s ease;
+}
+.energy-option i, .energy-tag i{ width:0.6rem; height:0.6rem; border-radius:50%; background:var(--e); flex:none; }
+.energy-tranquilo{ --e:var(--e-tranquilo); }
+.energy-activo{ --e:var(--e-activo); }
+.energy-fiestero{ --e:var(--e-fiestero); }
+.energy-option input:checked + span{ border-color:var(--e); background:color-mix(in srgb, var(--e) 18%, var(--ink)); }
+
+/* Cupo: stepper − n + */
+.stepper{ display:grid; grid-template-columns:48px 1fr 48px; align-items:center; border:1px solid var(--line-2); border-radius:12px; background:var(--ink); overflow:hidden; max-width:14rem; }
+.stepper button{ height:48px; background:none; color:var(--paper); font-size:1.4rem; line-height:1; }
+.stepper button:hover:not([disabled]){ background:var(--line); }
+.stepper button[disabled]{ opacity:0.3; cursor:default; }
+.stepper input{
+  font:inherit; font-size:16px; font-weight:700; text-align:center; width:100%; height:48px;
+  border:0; border-inline:1px solid var(--line); background:none; color:var(--paper); -moz-appearance:textfield; appearance:textfield;
+}
+.stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button{ -webkit-appearance:none; margin:0; }
+
+.form-actions{ display:flex; gap:0.6rem; }
+.form-actions .btn-primary{ flex:1; font-size:0.95rem; }
+.plan-form .status{ margin-top:-0.25rem; }
+.status.ok{ color:var(--spark); }
+
+/* Lista */
+.plan-group{ display:flex; flex-direction:column; gap:0.75rem; }
+.plan-group > h2{ font-family:var(--font-display); font-weight:700; font-size:1.2rem; }
+
+.plan-card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:1rem; display:flex; flex-direction:column; gap:0.9rem; }
+.plan-card.past{ opacity:0.6; }
+.plan-card.editing{ border-color:var(--line-2); }
+.plan-card-edit-title{ font-family:var(--font-display); font-weight:700; font-size:1.1rem; margin:0; }
+.plan-card-main{ display:flex; gap:0.9rem; align-items:flex-start; }
+.plan-date{
+  flex:none; width:3.6rem; padding:0.5rem 0; border-radius:14px; text-align:center;
+  background:linear-gradient(155deg, var(--spark), var(--accent)); color:var(--accent-ink);
+  display:flex; flex-direction:column; line-height:1;
+}
+.plan-card.past .plan-date{ background:var(--line-2); color:var(--paper); }
+.plan-date-day{ font-family:var(--font-display); font-weight:800; font-size:1.6rem; }
+.plan-date-month{ font-family:var(--font-mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; margin-top:0.25rem; }
+.plan-info{ min-width:0; flex:1; }
+.plan-info h3{ font-family:var(--font-display); font-weight:700; font-size:1.1rem; line-height:1.25; margin:0; overflow-wrap:anywhere; }
+.plan-when{ font-family:var(--font-mono); font-size:0.78rem; color:var(--muted); margin-top:0.35rem; text-transform:capitalize; }
+.plan-tags{ display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.7rem; }
+.tag{ display:inline-flex; align-items:center; gap:0.4rem; font-size:0.78rem; padding:0.3rem 0.65rem; border-radius:99px; background:var(--line); color:var(--paper); }
+.energy-tag{ text-transform:capitalize; background:color-mix(in srgb, var(--e) 16%, transparent); }
+
+.plan-card-foot{ display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; padding-top:0.8rem; border-top:1px solid var(--line); }
+.plan-card-foot .btn{ flex:1; padding:0.6rem 1rem; }
+.confirm-text{ flex-basis:100%; font-size:0.9rem; font-weight:600; }
+
+.planes-empty{ text-align:center; padding:1.5rem 1rem 0.5rem; display:flex; flex-direction:column; align-items:center; gap:0.6rem; }
+.planes-empty svg{ width:7.5rem; height:auto; }
+.planes-empty h2{ font-family:var(--font-display); font-weight:800; font-size:1.35rem; }
+.planes-empty p{ color:var(--muted); max-width:30ch; font-size:0.92rem; line-height:1.5; }
+
+/* Desktop: formulario fijo a la izquierda, planes a la derecha */
+@media (min-width:900px){
+  .planes-layout{ display:grid; grid-template-columns:minmax(20rem, 24rem) 1fr; align-items:start; gap:2rem; }
+  .new-plan{ position:sticky; top:1.5rem; }
+  .new-plan-toggle{ display:none; }
+  .new-plan .new-plan-body{ display:block; padding:1.5rem; }
+  .plan-card{ padding:1.25rem; }
+  .plan-card-foot{ justify-content:flex-end; }
+  .plan-card-foot .btn{ flex:none; }
+  .confirm-text{ flex-basis:auto; margin-right:auto; }
+  .planes-empty{ padding-top:3rem; }
+}
