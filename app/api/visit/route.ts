@@ -20,7 +20,7 @@ export async function POST() {
   }
 
   // El día lo pone la base (UTC); si ya hay fila para hoy no hace nada
-  const { error } = await supabaseAdmin().from("visits")
+  const { error } = await supabaseAdmin().from("landing_visits")
     .upsert({ visitor_id: visitorId }, { onConflict: "visitor_id,day", ignoreDuplicates: true });
 
   if (error) {

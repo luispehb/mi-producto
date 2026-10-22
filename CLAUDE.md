@@ -73,8 +73,9 @@ Next.js 16 (App Router) + React 19 + Supabase (`@supabase/supabase-js` + `@supab
 
 **Flujos de datos de la landing:**
 - Los formularios públicos (`SignupForm`, `FeedbackForm`, a través del hook `components/useFormSubmit.ts`) hacen POST a `app/api/signup` y `app/api/feedback`. El rol `anon` no tiene permiso de insert directo (lo cerró la migración `close_anon_inserts`). Un signup duplicado (`23505`) se responde como `{ duplicate: true }`, no como error.
-- Las visitas: `VisitTracker` (client) → `POST /api/visit`, que pone una cookie httpOnly `hap_vid` con un uuid y hace upsert de una fila por visitante y día (UTC) en `visits`. La tabla no tiene políticas: solo escribe el servidor.
-- Métricas: el RPC `admin_metrics()` solo lo puede ejecutar `service_role`.
+- Las visitas: `VisitTracker` (client) → `POST /api/visit`, que pone una cookie httpOnly `hap_vid` con un uuid y hace upsert de una fila por visitante y día (UTC) en `landing_visits`. La tabla no tiene políticas: solo escribe el servidor.
+- Visitas a la app: `/planes` y `/ciudad-actual` montan `<VisitTracker endpoint="/api/app-visit" />`; la ruta hace upsert con `supabaseUser()` de una fila por usuario y día (UTC) en `visits`, cuyo RLS solo deja insertar y leer las filas con `auth.uid() = user_id` (el select hace falta para el `on conflict`).
+- Métricas (`/admin/metricas`): el RPC `admin_metrics()` (`security definer`, para leer `auth.users`) solo lo puede ejecutar `service_role`. Devuelve usuarios registrados, activación (crearon ≥1 plan), retorno (≥2 días en `visits`) y, por semana, usuarios nuevos y usuarios que entraron a la app. Las métricas de la lista de espera ya no se muestran.
 
 **Base de datos:** el esquema vive solo en `supabase/migrations/*.sql` (el proyecto está vinculado con la Supabase CLI). Para cualquier cambio de esquema o permisos, creá una migración nueva con timestamp; no edites las ya aplicadas. Patrón que se viene usando: `enable row level security` + `revoke all ... from anon, authenticated` y después grants y políticas explícitas. Las métricas se calculan en SQL (`admin_metrics`), no en JS.
 

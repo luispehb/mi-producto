@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getUser, supabaseUser } from "@/lib/supabase-server";
 import type { CurrentCity } from "@/lib/current-city";
 import LogoutButton from "@/components/LogoutButton";
+import VisitTracker from "@/components/VisitTracker";
 import CurrentCityCard from "@/components/CurrentCityCard";
 import CurrentCityForm from "@/components/CurrentCityForm";
 
@@ -22,6 +23,7 @@ export default async function CiudadActualPage() {
 
   return (
     <main className="planes">
+      <VisitTracker endpoint="/api/app-visit" />
       <div className="topbar planes-topbar">
         <div>
           <span className="eyebrow">Hap</span>

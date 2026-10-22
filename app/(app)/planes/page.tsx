@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getUser, supabaseUser } from "@/lib/supabase-server";
 import { isPast, type Plan } from "@/lib/plans";
 import LogoutButton from "@/components/LogoutButton";
+import VisitTracker from "@/components/VisitTracker";
 import NewPlanPanel from "@/components/NewPlanPanel";
 import PlanCard from "@/components/PlanCard";
 
@@ -25,6 +26,7 @@ export default async function PlanesPage() {
 
   return (
     <main className="planes">
+      <VisitTracker endpoint="/api/app-visit" />
       <div className="topbar planes-topbar">
         <div>
           <span className="eyebrow">Hap</span>

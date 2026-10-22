@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-type Week = { week: string; new_signups: number; visitors: number };
-type Metrics = { signups: number; activated: number; visitors: number; returning: number; weekly: Week[] };
+type Week = { week: string; new_users: number; active_users: number };
+type Metrics = { users: number; activated: number; returning: number; weekly: Week[] };
 type State =
   | { kind: "loading" }
   | { kind: "login" }
@@ -74,9 +74,9 @@ export default function MetricsDashboard({ email }: { email: string }) {
       </div>
 
       <div className="stats">
-        <Stat label="Registrados" value={String(m.signups)} note="emails en la lista de espera" />
-        <Stat label="Activación" value={pct(m.activated, m.signups)} note={`${m.activated} de ${m.signups} registrados dejaron un comentario`} />
-        <Stat label="Retorno" value={pct(m.returning, m.visitors)} note={`${m.returning} de ${m.visitors} visitantes entraron en 2+ días`} />
+        <Stat label="Registrados" value={String(m.users)} note="cuentas creadas en la app" />
+        <Stat label="Activación" value={pct(m.activated, m.users)} note={`${m.activated} de ${m.users} crearon al menos un plan`} />
+        <Stat label="Retorno" value={pct(m.returning, m.users)} note={`${m.returning} de ${m.users} entraron a la app en 2+ días`} />
       </div>
 
       <section className="panel">
@@ -84,7 +84,7 @@ export default function MetricsDashboard({ email }: { email: string }) {
           <h2>Por semana</h2>
           <div className="legend">
             <span><i className="sw sw-new" /> Usuarios nuevos</span>
-            <span><i className="sw sw-visit" /> Visitantes</span>
+            <span><i className="sw sw-visit" /> Entraron a la app</span>
           </div>
         </div>
         <WeeklyChart weeks={m.weekly} />
@@ -106,7 +106,7 @@ function Stat({ label, value, note }: { label: string; value: string; note: stri
 function WeeklyChart({ weeks }: { weeks: Week[] }) {
   const W = 720, H = 260, left = 36, right = 8, top = 12, bottom = 28;
   const plotW = W - left - right, plotH = H - top - bottom;
-  const max = Math.max(1, ...weeks.flatMap(w => [w.new_signups, w.visitors]));
+  const max = Math.max(1, ...weeks.flatMap(w => [w.new_users, w.active_users]));
   // Eje Y con 4 marcas redondas
   const step = Math.max(1, Math.ceil(max / 4));
   const yMax = step * 4;
@@ -116,7 +116,7 @@ function WeeklyChart({ weeks }: { weeks: Week[] }) {
 
   return (
     <div className="chart-wrap">
-      <svg className="chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Usuarios nuevos y visitantes por semana">
+      <svg className="chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Usuarios nuevos y usuarios que entraron a la app por semana">
         {[0, 1, 2, 3, 4].map(i => (
           <g key={i}>
             <line x1={left} x2={W - right} y1={y(step * i)} y2={y(step * i)} className="grid" />
@@ -125,12 +125,12 @@ function WeeklyChart({ weeks }: { weeks: Week[] }) {
         ))}
         {weeks.map((w, i) => {
           const cx = left + group * i + group / 2;
-          const label = `Semana del ${fmtWeek(w.week)}: ${w.new_signups} nuevos, ${w.visitors} visitantes`;
+          const label = `Semana del ${fmtWeek(w.week)}: ${w.new_users} nuevos, ${w.active_users} entraron a la app`;
           return (
             <g key={w.week}>
               <title>{label}</title>
-              <rect x={cx - bar - 1} y={y(w.new_signups)} width={bar} height={plotH + top - y(w.new_signups)} rx={3} className="bar-new" />
-              <rect x={cx + 1} y={y(w.visitors)} width={bar} height={plotH + top - y(w.visitors)} rx={3} className="bar-visit" />
+              <rect x={cx - bar - 1} y={y(w.new_users)} width={bar} height={plotH + top - y(w.new_users)} rx={3} className="bar-new" />
+              <rect x={cx + 1} y={y(w.active_users)} width={bar} height={plotH + top - y(w.active_users)} rx={3} className="bar-visit" />
               {(weeks.length <= 8 || i % 2 === weeks.length % 2) && (
                 <text x={cx} y={H - 8} className="tick" textAnchor="middle">{fmtWeek(w.week)}</text>
               )}
