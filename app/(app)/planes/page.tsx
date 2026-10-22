@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getUser, supabaseUser } from "@/lib/supabase-server";
 import { isPast, type Plan } from "@/lib/plans";
@@ -31,6 +32,7 @@ export default async function PlanesPage() {
           <p className="who">{user.email}</p>
         </div>
         <div className="topbar-actions">
+          <Link className="btn btn-ghost" href="/ciudad-actual">Mi ciudad</Link>
           <LogoutButton />
         </div>
       </div>

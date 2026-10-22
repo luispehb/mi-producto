@@ -113,6 +113,13 @@ td.date{ font-family:var(--font-mono); font-size:0.78rem; }
   font:inherit; font-size:16px; min-height:48px; padding:0.75rem 0.95rem; width:100%;
   border:1px solid var(--line-2); border-radius:12px; background:var(--ink); color:var(--paper);
 }
+/* Ciudad actual: mismo estilo para el select y las fechas */
+.plan-form select, .plan-form input[type="date"]{
+  font:inherit; font-size:16px; min-height:48px; padding:0.75rem 0.95rem; width:100%;
+  border:1px solid var(--line-2); border-radius:12px; background:var(--ink); color:var(--paper);
+}
+.plan-form select:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.plan-form input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(0.9); }
 .plan-form input::placeholder{ color:var(--muted-2); }
 .plan-form input:focus-visible, .plan-form button:focus-visible, .energy-option input:focus-visible + span{ outline:2px solid var(--accent); outline-offset:2px; }
 .plan-form input[type="datetime-local"]::-webkit-calendar-picker-indicator{ filter:invert(0.9); }
@@ -168,6 +175,7 @@ td.date{ font-family:var(--font-mono); font-size:0.78rem; }
 .plan-info{ min-width:0; flex:1; }
 .plan-info h3{ font-family:var(--font-display); font-weight:700; font-size:1.1rem; line-height:1.25; margin:0; overflow-wrap:anywhere; }
 .plan-when{ font-family:var(--font-mono); font-size:0.78rem; color:var(--muted); margin-top:0.35rem; text-transform:capitalize; }
+.city-when{ text-transform:none; }
 .plan-tags{ display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.7rem; }
 .tag{ display:inline-flex; align-items:center; gap:0.4rem; font-size:0.78rem; padding:0.3rem 0.65rem; border-radius:99px; background:var(--line); color:var(--paper); }
 .energy-tag{ text-transform:capitalize; background:color-mix(in srgb, var(--e) 16%, transparent); }
