@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 type Week = { week: string; new_users: number; active_users: number };
-type Metrics = { users: number; activated: number; returning: number; weekly: Week[] };
+type Metrics = {
+  users: number; activated: number; returning: number;
+  first_day_plan: number; second_plan: number; plans: number; plans_soon: number;
+  waitlist: number; waitlist_users: number;
+  weekly: Week[];
+};
 type State =
   | { kind: "loading" }
   | { kind: "login" }
@@ -77,6 +82,13 @@ export default function MetricsDashboard({ email }: { email: string }) {
         <Stat label="Registrados" value={String(m.users)} note="cuentas creadas en la app" />
         <Stat label="Activación" value={pct(m.activated, m.users)} note={`${m.activated} de ${m.users} crearon al menos un plan`} />
         <Stat label="Retorno" value={pct(m.returning, m.users)} note={`${m.returning} de ${m.users} entraron a la app en 2+ días`} />
+      </div>
+
+      <div className="stats">
+        <Stat label="Plan el primer día" value={pct(m.first_day_plan, m.users)} note={`${m.first_day_plan} de ${m.users} crearon su primer plan el día que se registraron`} />
+        <Stat label="Segundo plan" value={pct(m.second_plan, m.activated)} note={`${m.second_plan} de ${m.activated} activados crearon planes en 2+ días`} />
+        <Stat label="Planes para ya" value={pct(m.plans_soon, m.plans)} note={`${m.plans_soon} de ${m.plans} planes son para los próximos 7 días`} />
+        <Stat label="Lista → cuenta" value={pct(m.waitlist_users, m.waitlist)} note={`${m.waitlist_users} de ${m.waitlist} emails de la lista de espera crearon cuenta`} />
       </div>
 
       <section className="panel">
