@@ -43,6 +43,7 @@ export default function Home() {
   </nav>
   <div className="header-right">
     <ClockTicker />
+    <a className="btn btn-ghost" href="/login">Iniciá sesión</a>
     <a className="btn btn-primary" href="#registro">Sumate</a>
   </div>
 </header>

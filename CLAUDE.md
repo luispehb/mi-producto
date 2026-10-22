@@ -63,6 +63,14 @@ Next.js 16 (App Router) + React 19 + Supabase (`@supabase/supabase-js` + `@supab
 - Páginas de la app en el route group `app/(app)/` (`login`, `registro`, `olvide`, `nueva-clave`, `planes`); reusan `app/admin/admin.css`.
 - Admin: `components/AdminGate.tsx` envuelve `/admin` y `/admin/metricas` (sin sesión redirige; si el email no está en `ADMIN_EMAILS`, muestra "Sin acceso"). Los datos salen de `/api/admin/data` y `/api/admin/metrics`, que vuelven a chequear con `requireAdmin()` (`lib/admin-auth.ts`). La tabla `admins` quedó sin uso.
 
+**Planes (la entidad principal):**
+- Tabla `plans` (migración `..._plans.sql`): RLS con las cuatro políticas por `auth.uid() = user_id`; `user_id` tiene `default auth.uid()`, pero la ruta igual lo manda.
+- `lib/plans.ts` no importa nada de servidor: lo usan el formulario (client), la página y las rutas. `parsePlanInput()` valida y arma a mano cada campo con las mismas reglas que los `check` de la tabla; si cambiás una regla, cambiala en los dos lados.
+- `starts_at` es `timestamp` **sin zona**: la hora local de la ciudad tal como la elige el viajero (`datetime-local`). En JS se trata como UTC y se formatea con `timeZone: "UTC"` para mostrarla igual; no la conviertas a la zona del navegador. "Ya pasó" usa un margen de un día (`yesterday()`) por las zonas horarias.
+- `POST /api/planes` crea; `PATCH`/`DELETE /api/planes/[id]` usan `supabaseUser()` con `.select("id")`: si el RLS no devuelve filas (plan de otro o inexistente), responden 404.
+- La skill `.claude/skills/nueva-entidad` replica este patrón para entidades nuevas (incluye `verificar-rls.sql` para probar con dos usuarios).
+- Pendiente respecto de "La app": el panel admin todavía no muestra planes y `admin_metrics()` no cuenta ciudades ni tipos de plan.
+
 **Flujos de datos de la landing:**
 - Los formularios públicos (`SignupForm`, `FeedbackForm`, a través del hook `components/useFormSubmit.ts`) hacen POST a `app/api/signup` y `app/api/feedback`. El rol `anon` no tiene permiso de insert directo (lo cerró la migración `close_anon_inserts`). Un signup duplicado (`23505`) se responde como `{ duplicate: true }`, no como error.
 - Las visitas: `VisitTracker` (client) → `POST /api/visit`, que pone una cookie httpOnly `hap_vid` con un uuid y hace upsert de una fila por visitante y día (UTC) en `visits`. La tabla no tiene políticas: solo escribe el servidor.
