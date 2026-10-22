@@ -83,6 +83,23 @@ Next.js 16 (App Router) + React 19 + Supabase (`@supabase/supabase-js` + `@supab
 
 `next.config.ts` mantiene redirects desde las URLs del sitio estático anterior (`/index.html`, `/admin.html`).
 
+## Métricas
+
+El dashboard de `/admin/metricas` (`components/MetricsDashboard.tsx`) muestra lo que devuelve el RPC `admin_metrics()` (última versión en `..._willingness_metrics.sql`; reemplaza la función entera, así que una métrica nueva va en una migración con `create or replace` de toda la función). Los porcentajes se calculan en el componente con `pct()`; los conteos, en SQL. Los días son días UTC.
+
+| Métrica | Qué pregunta responde | Cómo se calcula |
+|---|---|---|
+| Registrados | ¿Cuánta gente creó cuenta en la app? | `count(*)` de `auth.users`. |
+| Activación | ¿Los que entran llegan a crear un plan concreto, o se quedan mirando? | Usuarios con al menos una fila en `plans` ÷ registrados. |
+| Retorno | ¿La app les sirve como para volver otro día? | Usuarios con 2+ filas en `visits` (una fila por usuario y día) ÷ registrados. |
+| Plan el primer día | ¿Se cumple la promesa de la landing, pasar de "hola" a un plan en minutos? | Usuarios cuyo primer plan (`min(created_at)` en `plans`) es del mismo día que su registro (`auth.users.created_at`) ÷ registrados. |
+| Segundo plan | ¿Quien armó un plan lo vuelve a usar para otro? | Usuarios que crearon planes en 2+ días distintos (por `created_at`) ÷ activados. |
+| Planes para ya | ¿Los planes son para la ciudad donde están ahora (intención real) o vagos y a futuro? | Planes cuyo día de `starts_at` cae entre el día de creación − 1 y + 7 ÷ total de planes. `starts_at` es hora local sin zona, por eso se compara por día y con el margen de un día de `yesterday()`. |
+| Lista → cuenta | ¿La lista de espera de la landing se convierte en uso? | Emails distintos de `signups` (en minúsculas) que aparecen en `auth.users` ÷ emails distintos de `signups`. |
+| Por semana (gráfico) | ¿El uso crece o se apaga semana a semana? | Para las últimas 12 semanas (lunes a domingo, `date_trunc('week')`): usuarios nuevos según `auth.users.created_at`, y usuarios distintos con alguna fila en `visits` esa semana. |
+
+`visits` solo se llena cuando un usuario con sesión abre `/planes` o `/ciudad-actual` (`/api/app-visit`), así que Retorno y "Entraron a la app" no cuentan visitas a la landing (esas van a `landing_visits` y el dashboard no las muestra). Todavía no hay métricas de ciudades ni de tipos de plan (energía), que son las que "La app" pide para decidir dónde lanzar.
+
 ## Variables de entorno (`.env.local`)
 
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (cliente), `SUPABASE_SECRET_KEY` (solo servidor) y `ADMIN_EMAILS` (emails separados por comas que entran al panel admin; también hay que cargarla en Vercel). Las demás variables del archivo vienen de la integración de Vercel y el código no las usa.
