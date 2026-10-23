@@ -1,7 +1,7 @@
 // Lo comparten el formulario, la página y /api/ciudad-actual (sin nada de servidor)
 
 // Lista cerrada de ciudades, agrupadas por región. Tiene que coincidir con el check
-// de la tabla current_cities: si sumás una ciudad, sumala también en una migración.
+// de la tabla current_cities: si sumás una ciudad, sumala también en una migración y en lib/city-coords.ts.
 export const REGIONS = [
   {
     name: "América del Norte",

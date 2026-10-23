@@ -15,7 +15,7 @@ export default function ExploreFilters({ city, from, to }: { city?: string; from
   };
 
   return (
-    <form key={`${city}-${from}-${to}`} className="plan-form" action="/explorar" method="get">
+    <form key={`${city}-${from}-${to}`} className="plan-form explore-filters" action="/explorar" method="get">
       <label className="field">
         <span>Ciudad</span>
         <CitySelect defaultValue={city} />
@@ -34,7 +34,7 @@ export default function ExploreFilters({ city, from, to }: { city?: string; from
       <div className="form-actions">
         <button className="btn btn-primary" type="submit">Ver planes</button>
       </div>
-      <p className="new-plan-sub">Podés mirar de hoy hasta {MAX_DAYS} días adelante: en tu ciudad o en la que vas a visitar.</p>
+      <p className="explore-hint">De hoy hasta {MAX_DAYS} días adelante: en tu ciudad o en la que vas a visitar.</p>
     </form>
   );
 }
