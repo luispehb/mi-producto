@@ -1,40 +1,56 @@
 "use client";
 
-import { MAX_DAYS } from "@/lib/explore";
+import { useRef, useState } from "react";
+import { addDays, cityToday, MAX_DAYS } from "@/lib/explore";
 import CitySelect from "./CitySelect";
 
-// Día en la zona del navegador, corrido "days" días, como lo espera <input type="date">
-const localDay = (days: number) => new Date(Date.now() + days * 86_400_000 - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
+// Filtro de /explorar: un GET común a la misma página, la búsqueda se hace en el servidor.
+// Los límites del calendario son los días de la ciudad elegida (mismo "hoy" que el servidor).
+// En mobile se pliega cuando ya hay una búsqueda; en desktop siempre se ve (lo maneja el CSS).
+export default function ExploreFilters({ city, from, to, startOpen }: { city?: string; from?: string; to?: string; startOpen: boolean }) {
+  const [open, setOpen] = useState(startOpen);
+  const [selected, setSelected] = useState(city ?? "");
+  const fromRef = useRef<HTMLInputElement>(null);
+  const toRef = useRef<HTMLInputElement>(null);
+  const min = cityToday(selected || undefined);
+  const max = addDays(min, MAX_DAYS);
 
-// Filtro de /explorar: un GET común a la misma página, la búsqueda se hace en el servidor
-export default function ExploreFilters({ city, from, to }: { city?: string; from?: string; to?: string }) {
-  // Los límites se ponen al enfocar: calcularlos al renderizar no coincide entre servidor y navegador
-  const limit = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.min = localDay(-1);
-    e.currentTarget.max = localDay(MAX_DAYS);
-  };
+  // Otra ciudad puede ir un día adelante o atrás: las fechas que quedan afuera se acomodan al rango nuevo
+  function onCity(next: string) {
+    setSelected(next);
+    const lo = cityToday(next), hi = addDays(lo, MAX_DAYS);
+    for (const input of [fromRef.current, toRef.current]) {
+      if (input?.value) input.value = input.value < lo ? lo : input.value > hi ? hi : input.value;
+    }
+  }
 
   return (
-    <form key={`${city}-${from}-${to}`} className="plan-form explore-filters" action="/explorar" method="get">
-      <label className="field">
-        <span>Ciudad</span>
-        <CitySelect defaultValue={city} />
-      </label>
+    <section id="filtros" className={open ? "panel explore-filters-panel open" : "panel explore-filters-panel"} aria-label="Buscá planes">
+      <button className="btn btn-ghost explore-filters-toggle" type="button" aria-expanded={open} aria-controls="filtros-body" onClick={() => setOpen(o => !o)}>
+        {open ? "Cerrar" : "Cambiar ciudad o fechas"}
+      </button>
+      {/* El #resultados hace que, al buscar, la página baje directo a los planes */}
+      <form id="filtros-body" key={`${city}-${from}-${to}`} className="plan-form explore-filters" action="/explorar#resultados" method="get">
+        <label className="field">
+          <span>Ciudad</span>
+          <CitySelect defaultValue={city} onChange={onCity} />
+        </label>
 
-      <label className="field">
-        <span>Desde</span>
-        <input type="date" name="from" defaultValue={from} onFocus={limit} required />
-      </label>
+        <label className="field">
+          <span>Desde</span>
+          <input ref={fromRef} type="date" name="from" defaultValue={from} min={min} max={max} required />
+        </label>
 
-      <label className="field">
-        <span>Hasta</span>
-        <input type="date" name="to" defaultValue={to} onFocus={limit} required />
-      </label>
+        <label className="field">
+          <span>Hasta</span>
+          <input ref={toRef} type="date" name="to" defaultValue={to} min={min} max={max} required />
+        </label>
 
-      <div className="form-actions">
-        <button className="btn btn-primary" type="submit">Ver planes</button>
-      </div>
-      <p className="explore-hint">De hoy hasta {MAX_DAYS} días adelante: en tu ciudad o en la que vas a visitar.</p>
-    </form>
+        <div className="form-actions">
+          <button className="btn btn-primary" type="submit">Ver planes</button>
+        </div>
+        <p className="explore-hint">De hoy hasta {MAX_DAYS} días adelante, en el horario de la ciudad: la tuya o la que vas a visitar.</p>
+      </form>
+    </section>
   );
 }

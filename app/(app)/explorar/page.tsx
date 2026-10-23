@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getUser, supabaseUser } from "@/lib/supabase-server";
 import { cityInfo, dayOffset, formatDay, type CurrentCity } from "@/lib/current-city";
-import { MAX_DAYS, parseExploreQuery, type ExplorePlan } from "@/lib/explore";
+import { addDays, isHere, MAX_DAYS, parseExploreQuery, type ExplorePlan } from "@/lib/explore";
 import { dateParts, ENERGIES } from "@/lib/plans";
 import LogoutButton from "@/components/LogoutButton";
 import VisitTracker from "@/components/VisitTracker";
@@ -32,11 +32,11 @@ export default async function ExplorarPage({ searchParams }: { searchParams: Pro
   const ok = query && !query.error ? query : null;
   const energy = ENERGIES.find(e => e === params.energy);
 
-  // Los planes de la ciudad en toda la ventana (para contar por día) y los conteos por ciudad del mapa.
-  // Los dos RPC devuelven planes de todos sin datos del creador y aplican el tope de 7 días.
+  // Los planes de la ciudad de hoy a +7 en su horario (para contar por día) y los conteos por ciudad del mapa.
+  // Los dos RPC devuelven planes de todos sin datos del creador y aplican el tope de días.
   const [plansRes, countsRes] = await Promise.all([
-    ok ? db.rpc("explore_plans", { p_city: ok.city, p_from: dayOffset(-1), p_to: dayOffset(MAX_DAYS + 1) }) : null,
-    db.rpc("explore_city_counts", { p_from: ok?.from ?? dayOffset(-1), p_to: ok?.to ?? dayOffset(MAX_DAYS) }),
+    ok ? db.rpc("explore_plans", { p_city: ok.city, p_from: ok.today, p_to: ok.last }) : null,
+    db.rpc("explore_city_counts", { p_from: ok?.from ?? dayOffset(0), p_to: ok?.to ?? dayOffset(MAX_DAYS) }),
   ]);
   if (plansRes?.error) console.error("explore_plans", plansRes.error);
   if (countsRes.error) console.error("explore_city_counts", countsRes.error);
@@ -52,11 +52,15 @@ export default async function ExplorarPage({ searchParams }: { searchParams: Pro
   const days = new Map<string, ExplorePlan[]>();
   for (const p of plans) days.set(dayOf(p), [...(days.get(dayOf(p)) ?? []), p]);
 
+  // Fechas elegidas a mano en la URL (solo si son válidas), para conservarlas al cambiar otro filtro
+  const urlFrom = ok && typeof params.from === "string" ? ok.from : undefined;
+  const urlTo = ok && typeof params.to === "string" ? ok.to : undefined;
+
   // Links que cambian un filtro y conservan el resto
   const href = (change: { from?: string; to?: string; energy?: string | null }) => {
     const q = new URLSearchParams({ city: ok?.city ?? "" });
-    const from = "from" in change ? change.from : (params.from as string | undefined);
-    const to = "to" in change ? change.to : (params.to as string | undefined);
+    const from = "from" in change ? change.from : urlFrom;
+    const to = "to" in change ? change.to : urlTo;
     const e = "energy" in change ? change.energy : energy;
     if (from) q.set("from", from);
     if (to) q.set("to", to);
@@ -64,10 +68,11 @@ export default async function ExplorarPage({ searchParams }: { searchParams: Pro
     return `/explorar?${q}`;
   };
 
-  const stripDays = Array.from({ length: MAX_DAYS + 1 }, (_, i) => dayOffset(i));
+  // Los días de la tira son los de la ciudad: el primero es "hoy" allá
+  const stripDays = ok ? Array.from({ length: MAX_DAYS + 1 }, (_, i) => addDays(ok.today, i)) : [];
   const singleDay = ok && ok.from === ok.to ? ok.from : null;
   const info = ok ? cityInfo(ok.city) : undefined;
-  const here = ok && ok.city === current?.city;
+  const here = ok && isHere(current, ok.city, ok.today);
 
   return (
     <main className="planes explorar">
@@ -86,17 +91,15 @@ export default async function ExplorarPage({ searchParams }: { searchParams: Pro
       </div>
 
       <section className="explore-hero" aria-label="Buscá planes">
-        <ExploreMap city={ok?.city} from={params.from as string | undefined} to={params.to as string | undefined} counts={counts} />
+        <ExploreMap city={ok?.city} from={urlFrom} to={urlTo} counts={counts} />
         <div className="map-legend" aria-hidden="true">
           <span><i className="dot has-plans" />Con planes</span>
           <span><i className="dot" />Sin planes todavía</span>
         </div>
       </section>
 
-      <section className="panel explore-filters-panel">
-        <ExploreFilters city={query?.city} from={query?.from} to={query?.to} />
-        {query?.error && <p className="status" aria-live="polite">{query.error}</p>}
-      </section>
+      <ExploreFilters key={`${query?.city}-${query?.from}-${query?.to}`} city={query?.city} from={query?.from} to={query?.to} startOpen={!ok} />
+      {query?.error && <p className="status explore-error" aria-live="polite">{query.error}</p>}
 
       {!query ? (
         <div className="planes-empty">
@@ -105,7 +108,7 @@ export default async function ExplorarPage({ searchParams }: { searchParams: Pro
         </div>
       ) : !ok ? null : (
         <>
-          <header className="explore-city">
+          <header id="resultados" className="explore-city">
             <span className={here ? "explore-badge here" : "explore-badge"}>{here ? "Estás acá" : "Para tu próximo viaje"}</span>
             <h2>{ok.city}</h2>
             <p className="explore-city-meta">
@@ -125,7 +128,7 @@ export default async function ExplorarPage({ searchParams }: { searchParams: Pro
               return (
                 <Link key={day} className={day === singleDay ? "day-chip active" : "day-chip"} href={href({ from: day, to: day })} scroll={false}
                   aria-label={`${d.weekday} ${d.day} ${d.month}: ${n} ${n === 1 ? "plan" : "planes"}`}>
-                  <span className="day-chip-wd">{d.weekday}</span>
+                  <span className="day-chip-wd">{day === ok.today ? "Hoy" : d.weekday}</span>
                   <span className="day-chip-d">{d.day}</span>
                   <span className={n ? "day-chip-n" : "day-chip-n none"}>{n || "·"}</span>
                 </Link>

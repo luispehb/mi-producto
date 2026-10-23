@@ -39,9 +39,13 @@ export async function getUser() {
   return user;
 }
 
-// ADMIN_EMAILS: lista separada por comas
-export function isAdmin(email: string | null | undefined) {
-  if (!email) return false;
+// ADMIN_EMAILS: lista separada por comas. El email tiene que estar confirmado: si no, alguien
+// podría registrarse con un email de la lista que todavía no tiene cuenta y entrar al panel.
+// Ojo: solo protege si el proyecto pide confirmar el email ("Confirm email" en Supabase Auth);
+// sin eso, Supabase marca cada cuenta como confirmada al crearla.
+export function isAdmin(user: { email?: string | null; email_confirmed_at?: string | null } | null | undefined) {
+  const email = user?.email;
+  if (!email || !user.email_confirmed_at) return false;
   const admins = (process.env.ADMIN_EMAILS ?? "").split(",").map(e => e.trim().toLowerCase()).filter(Boolean);
   return admins.includes(email.toLowerCase());
 }

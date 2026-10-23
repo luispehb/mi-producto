@@ -5,6 +5,6 @@ import { getUser, isAdmin } from "@/lib/supabase-server";
 export async function requireAdmin() {
   const user = await getUser();
   if (!user) return { error: Response.json({ error: "Sin sesión" }, { status: 401 }) };
-  if (!isAdmin(user.email)) return { error: Response.json({ error: "Sin acceso" }, { status: 403 }) };
+  if (!isAdmin(user)) return { error: Response.json({ error: "Sin acceso" }, { status: 403 }) };
   return { user };
 }

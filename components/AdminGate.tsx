@@ -9,7 +9,7 @@ export default async function AdminGate({ next, children }: { next: string; chil
   const user = await getUser();
   if (!user) redirect(`/login?next=${encodeURIComponent(next)}`);
 
-  if (!isAdmin(user.email)) {
+  if (!isAdmin(user)) {
     return (
       <main>
         <div className="login">
