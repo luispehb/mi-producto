@@ -3,12 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
+import { dateParts } from "@/lib/plans";
 
 type Signup = { email: string; created_at: string };
 type Feedback = { message: string; email: string | null; created_at: string };
-type Data = { signups: Signup[]; feedback: Feedback[] } | "error" | null;
+type PlanRow = { city: string; title: string; starts_at: string; energy: string; spots: number; created_at: string; email: string | null };
+type Data = { signups: Signup[]; feedback: Feedback[]; plans: PlanRow[] } | "error" | null;
 
 const fmtDate = (iso: string) => new Date(iso).toLocaleString("es", { dateStyle: "medium", timeStyle: "short" });
+
+// starts_at es hora local de la ciudad, sin zona: se muestra tal cual
+function fmtPlanDate(startsAt: string) {
+  const d = dateParts(startsAt);
+  return `${d.day} ${d.month} ${startsAt.slice(0, 4)} · ${d.time}`;
+}
 
 // CSV: comillas escapadas y sin fórmulas al abrirlo en Excel/Sheets
 function csvCell(value: unknown) {
@@ -55,7 +63,7 @@ export default function AdminPanel({ email }: { email: string }) {
         <div className="topbar">
           <div>
             <span className="eyebrow">Hap · Admin</span>
-            <h1>Lista de espera y comentarios</h1>
+            <h1>Lista de espera, planes y comentarios</h1>
             <p className="who" id="whoami">{email}</p>
           </div>
           <div className="topbar-actions">
@@ -77,6 +85,27 @@ export default function AdminPanel({ email }: { email: string }) {
                 {loaded && !loaded.signups.length && <EmptyRow colSpan={2} />}
                 {loaded?.signups.map((r, i) => (
                   <tr key={i}><td className="email">{r.email}</td><td className="date">{fmtDate(r.created_at)}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-head">
+            <h2>Planes<span className="count">{loaded ? `(${loaded.plans.length})` : ""}</span></h2>
+          </div>
+          <div className="table-wrap">
+            <table>
+              <thead><tr><th>Ciudad</th><th>Qué hacer</th><th>Fecha</th><th>Energía</th><th>Cupo</th><th>Creador</th><th>Creado</th></tr></thead>
+              <tbody>
+                {data === "error" && <EmptyRow colSpan={7} text="No se pudieron cargar los datos." />}
+                {loaded && !loaded.plans.length && <EmptyRow colSpan={7} />}
+                {loaded?.plans.map((r, i) => (
+                  <tr key={i}>
+                    <td>{r.city}</td><td className="msg">{r.title}</td><td className="date">{fmtPlanDate(r.starts_at)}</td>
+                    <td>{r.energy}</td><td>{r.spots}</td><td className="email">{r.email || "—"}</td><td className="date">{fmtDate(r.created_at)}</td>
+                  </tr>
                 ))}
               </tbody>
             </table>

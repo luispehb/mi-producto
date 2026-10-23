@@ -7,8 +7,9 @@ import PlanForm from "./PlanForm";
 
 type Mode = "view" | "edit" | "confirm";
 
-// Tarjeta de un plan: se ve, se edita en el lugar y se borra con confirmación
-export default function PlanCard({ plan, past = false }: { plan: Plan; past?: boolean }) {
+// Tarjeta de un plan: se ve, se edita en el lugar y se borra con confirmación.
+// En explorar va readOnly (los planes pueden ser de otros) y "mine" marca los propios.
+export default function PlanCard({ plan, past = false, readOnly = false, mine = false }: { plan: Plan; past?: boolean; readOnly?: boolean; mine?: boolean }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("view");
   const [deleting, setDeleting] = useState(false);
@@ -56,11 +57,12 @@ export default function PlanCard({ plan, past = false }: { plan: Plan; past?: bo
             <span className="tag">{plan.city}</span>
             <span className={`tag energy-tag energy-${plan.energy}`}><i aria-hidden="true" />{plan.energy}</span>
             <span className="tag">Busca {plan.spots} {plan.spots === 1 ? "persona" : "personas"}</span>
+            {mine && <span className="tag">Tuyo</span>}
           </div>
         </div>
       </div>
 
-      <div className="plan-card-foot">
+      {!readOnly && <div className="plan-card-foot">
         {mode === "confirm" ? (
           <>
             <span className="confirm-text">¿Borrar este plan?</span>
@@ -73,7 +75,7 @@ export default function PlanCard({ plan, past = false }: { plan: Plan; past?: bo
             <button className="btn btn-ghost" type="button" onClick={() => setMode("confirm")}>Borrar</button>
           </>
         )}
-      </div>
+      </div>}
       {error && <p className="status" aria-live="polite">{error}</p>}
     </article>
   );

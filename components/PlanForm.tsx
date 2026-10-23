@@ -2,7 +2,9 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { CITIES, ENERGIES, SPOTS_MAX, SPOTS_MIN, toInputValue, type Energy, type Plan } from "@/lib/plans";
+import { ENERGIES, SPOTS_MAX, SPOTS_MIN, toInputValue, type Energy, type Plan } from "@/lib/plans";
+import { cityInfo } from "@/lib/current-city";
+import CitySelect from "./CitySelect";
 
 // Crea (sin plan) o edita (con plan) por /api/planes: el navegador no habla con Supabase
 export default function PlanForm({ plan, onDone, onCancel }: { plan?: Plan; onDone?: () => void; onCancel?: () => void }) {
@@ -56,11 +58,8 @@ export default function PlanForm({ plan, onDone, onCancel }: { plan?: Plan; onDo
     <form className="plan-form" onSubmit={onSubmit}>
       <label className="field">
         <span>Ciudad</span>
-        <input name="city" placeholder="Lisboa" list={`${uid}-cities`} defaultValue={plan?.city}
-          minLength={2} maxLength={60} autoComplete="off" enterKeyHint="next" required />
-        <datalist id={`${uid}-cities`}>
-          {CITIES.map(c => <option key={c} value={c} />)}
-        </datalist>
+        {/* Un plan viejo con una ciudad fuera de la lista arranca sin elegir */}
+        <CitySelect defaultValue={plan && cityInfo(plan.city) ? plan.city : undefined} />
       </label>
 
       <label className="field">

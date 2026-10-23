@@ -67,7 +67,7 @@ function toUtcDate(value: string) {
   return new Date(Date.UTC(y, m - 1, d));
 }
 
-function isValidDate(value: string) {
+export function isValidDate(value: string) {
   const m = DATE_RE.exec(value);
   if (!m) return false;
   const dt = toUtcDate(value);
@@ -75,7 +75,7 @@ function isValidDate(value: string) {
 }
 
 // Hoy (UTC) corrido un día para cada lado: margen para las zonas horarias
-const dayOffset = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+export const dayOffset = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
 
 // Valida y arma a mano cada campo, con las mismas reglas que los check de la tabla.
 // El país no viene del navegador: sale de la lista.

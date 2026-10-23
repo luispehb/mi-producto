@@ -2,7 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { REGIONS, type CurrentCity } from "@/lib/current-city";
+import type { CurrentCity } from "@/lib/current-city";
+import CitySelect from "./CitySelect";
 
 // Hoy en la zona del navegador, como lo espera <input type="date">
 const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
@@ -43,14 +44,7 @@ export default function CurrentCityForm({ current }: { current: CurrentCity | nu
     <form key={current ? `${current.city}-${current.arrived_on}-${current.leaves_on}` : "nueva"} className="plan-form" onSubmit={onSubmit}>
       <label className="field">
         <span>Ciudad</span>
-        <select name="city" defaultValue={current?.city ?? ""} required>
-          <option value="" disabled>Elegí tu ciudad</option>
-          {REGIONS.map(r => (
-            <optgroup key={r.name} label={r.name}>
-              {r.cities.map(([city, country]) => <option key={city} value={city}>{city}, {country}</option>)}
-            </optgroup>
-          ))}
-        </select>
+        <CitySelect defaultValue={current?.city} placeholder="Elegí tu ciudad" />
       </label>
 
       <label className="field">

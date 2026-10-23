@@ -31,6 +31,7 @@ export default async function CiudadActualPage() {
           <p className="who">{user.email}</p>
         </div>
         <div className="topbar-actions">
+          <Link className="btn btn-ghost" href="/explorar">Explorar</Link>
           <Link className="btn btn-ghost" href="/planes">Mis planes</Link>
           <LogoutButton />
         </div>

@@ -34,6 +34,7 @@ export default async function PlanesPage() {
           <p className="who">{user.email}</p>
         </div>
         <div className="topbar-actions">
+          <Link className="btn btn-ghost" href="/explorar">Explorar</Link>
           <Link className="btn btn-ghost" href="/ciudad-actual">Mi ciudad</Link>
           <LogoutButton />
         </div>

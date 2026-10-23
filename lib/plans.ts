@@ -1,9 +1,8 @@
 // Lo comparten el formulario, la página y /api/planes (sin nada de servidor)
+import { cityInfo } from "./current-city";
+
 export const ENERGIES = ["tranquilo", "activo", "fiestero"] as const;
 export type Energy = (typeof ENERGIES)[number];
-
-// Las primeras ciudades del landing, como sugerencias del formulario
-export const CITIES = ["Lisboa", "Barcelona", "CDMX", "Buenos Aires", "Tokio", "Berlín"];
 
 export const SPOTS_MIN = 1;
 export const SPOTS_MAX = 20;
@@ -39,13 +38,14 @@ const text = (v: unknown) => (typeof v === "string" ? v.trim().replace(/\s+/g, "
 // Valida y arma a mano cada campo, con las mismas reglas que los check de la tabla
 export function parsePlanInput(body: unknown): { data: PlanInput; error?: undefined } | { error: string; data?: undefined } {
   const b = (body ?? {}) as Record<string, unknown>;
-  const city = text(b.city);
+  const city = typeof b.city === "string" ? b.city : "";
   const title = text(b.title);
   const startsAt = typeof b.starts_at === "string" ? b.starts_at : "";
   const energy = ENERGIES.find(e => e === b.energy);
   const spots = Number(b.spots);
 
-  if (city.length < 2 || city.length > 60) return { error: "Poné una ciudad (2 a 60 letras)." };
+  // La ciudad sale de la lista cerrada de lib/current-city.ts (igual que el check de la tabla)
+  if (!cityInfo(city)) return { error: "Elegí la ciudad de la lista." };
   if (title.length < 3 || title.length > 120) return { error: "Contá qué quieren hacer (3 a 120 letras)." };
   const m = LOCAL_DT_RE.exec(startsAt);
   if (!m) return { error: "Elegí fecha y hora." };
